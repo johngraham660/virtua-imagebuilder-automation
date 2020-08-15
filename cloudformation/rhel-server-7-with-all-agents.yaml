@@ -89,6 +89,46 @@ Resources:
       # If you do not have a default VPC or want to use a different VPC, you must specify the subnet ID to use
       # SubnetId: 'subnet-id'
 
+  # ========================================
+  # Specifies the distribution configuration 
+  # ========================================
+  # A distribution configuration allows you to specify the name and description of your output AMI,
+  # authorize other AWS accounts to launch the AMI, and replicate the AMI to other AWS Regions. 
+  # It also allows you to export the AMI to Amazon S3.
+  DistributionConfigurationAllParameters:
+    Type: AWS::ImageBuilder::DistributionConfiguration
+    Properties:
+      Name: 'distribution-configuration-name'
+      Description: 'description'
+      Distributions:
+        - Region: 'eu-west-1'
+          AmiDistributionConfiguration:
+            Name: 'VIRTUA-RHEL7-AMI-{{ imagebuilder:buildDate }}'
+            Description: 'Redhat Enterprise Linux 7 x86 - Hourly'
+            AmiTags:
+              AmiTagKey: 'ami-tag-key'
+            LaunchPermissionConfiguration:
+              UserIds:
+                - '724381094392' # AWS - ebberon-development
+                - '028356534209' # AWS - phoenix-development
+
+  # Defines the image pipeline
+  ImagePipelineAllParameters:
+    Type: AWS::ImageBuilder::ImagePipeline
+    Properties:
+      Name: VIRTUA-RHEL7-BUILD-IMAGE-PIPELINE
+      Description: A RHEL7 test pipeline
+      ImageRecipeArn: RHELServer7ImageRecipe
+      InfrastructureConfigurationArn: RHELServer7ImageInfrastructureConfiguration
+      DistributionConfigurationArn: DistributionConfigurationAllParameters
+      ImageTestsConfiguration:
+        ImageTestsEnabled: false
+        TimeoutMinutes: 90
+      Schedule:
+        ScheduleExpression: 'cron(0 0 * * 0)'
+        PipelineExecutionStartCondition: 'EXPRESSION_MATCH_ONLY'
+      Status: 'DISABLED'
+
   # =======================================================================================
   # This sections defines all of the build components we want to deploy in the image recipe
   # =======================================================================================

@@ -1,0 +1,257 @@
+---
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+AWSTemplateFormatVersion: 2010-09-09
+
+Resources:
+  # Create an S3 Bucket for logs.
+  # When deleting the stack, make sure to empty the bucket first.
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html
+  ImageBuilderLogBucket:
+    Type: AWS::S3::Bucket
+    # If you want to delete the stack, but keep the bucket, set the DelectionPolicy to Retain.
+    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html
+    # DeletionPolicy: Retain
+
+  # By default, AWS Services do not have permission to perform actions on your instances. This grants
+  # AWS Systems Manager (SSM) and EC2 Image Builder the necessary permissions to build an image.
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html
+  # https://docs.aws.amazon.com/imagebuilder/latest/userguide/image-builder-setting-up.html
+  InstanceRole:
+    Type: AWS::IAM::Role
+    Metadata:
+      Comment: Role to be used by instance during image build.
+    Properties:
+      ManagedPolicyArns:
+        - Fn::Sub: arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore
+        - Fn::Sub: arn:${AWS::Partition}:iam::aws:policy/EC2InstanceProfileForImageBuilder
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+        Version: "2012-10-17"
+      Path: /executionServiceEC2Role/
+
+  # Policy to allow the instance to write to the S3 bucket (via instance role / instance profile).
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-policy.html
+  InstanceRoleLoggingPolicy:
+    Type: AWS::IAM::Policy
+    Metadata:
+      Comment: Allows the instance to save log files to an S3 bucket.
+    Properties:
+      PolicyName: ImageBuilderLogBucketPolicy
+      Roles:
+        - Ref: InstanceRole
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - s3:PutObject
+            Effect: Allow
+            Resource:
+              - Fn::Sub:
+                  - arn:${AWS::Partition}:s3:::${BUCKET}/*
+                  - BUCKET:
+                      Ref: ImageBuilderLogBucket
+
+  # To pass the InstanceRole to an EC2 instance, we need an InstanceProfile.
+  # This profile will be used during the image build process.
+  # https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2_instance-profiles.html
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /executionServiceEC2Role/
+      Roles:
+        - Ref: InstanceRole
+
+  # Specifies the infrastructure within which to build and test your image.
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-imagebuilder-infrastructureconfiguration.html
+  CENTOSServer7ImageInfrastructureConfiguration:
+    Type: AWS::ImageBuilder::InfrastructureConfiguration
+    Properties:
+      Name: CENTOSServer7-Image-Infrastructure-Configuration
+      InstanceProfileName:
+        Ref: InstanceProfile
+      InstanceTypes:
+        - t2.micro
+      # Specify an S3 bucket and EC2 Image Builder will save logs to the bucket.
+      Logging:
+        S3Logs:
+          S3BucketName:
+            Ref: ImageBuilderLogBucket
+          # S3KeyPrefix: 'my-imagebuilder-bucket-prefix'
+      # If you would like to keep the instance running after a failed build, set TerminateInstanceOnFailure to false.
+      TerminateInstanceOnFailure: true
+      # If you do not have a default VPC or want to use a different VPC, you must specify the subnet ID to use
+      # SubnetId: 'subnet-id'
+
+  # =======================================================================================
+  # This sections defines all of the build components we want to deploy in the image recipe
+  # =======================================================================================
+  # A custom EC2 Image Builder component that downloads and installs the AWS Cloudwatch Agent. The component includes
+  # a validation step which will run after the install but before the image capture. Also included, is a test step which
+  # runs after the image is captured (EC2 Image Builder launches a new instance from the image and runs the test phase).
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-imagebuilder-component.html
+
+  
+  CENTOSServer7UpdateComponent:
+    Type: AWS::ImageBuilder::Component
+    Properties:
+      Name:  CENTOSServer7Update
+      Version: 0.0.1
+      Description: Update all installed RPM's to latest hosted on RHUI
+      ChangeDescription: Initial Release
+      Platform: Linux
+      Data: |
+        name: 'update_rhel_image'
+        description: 'Updates the base rhel image to the latest patch release provided by RHUI'
+        schemaVersion: 1.0
+        phases:
+          - name: build
+            steps:
+              - name: update
+                action: ExecuteBash
+                onFailure: Abort
+                inputs:
+                  commands:
+                    - |
+                      sudo yum -y update
+        
+          - name: validate
+            steps:
+              - name: validateUpdate
+                action: ExecuteBash
+                inputs:
+                  commands:
+                    - |
+                      REDHAT_MINOR_RELEASE=$(rpm -qi redhat-release-server | grep ^Version | awk -F: '{print $2}' | awk -F. '{print $2}' | sed 's/ //g')
+        
+                      function fail_with_message() {
+                        1>&2 echo $1
+                        exit 1
+                      }
+        
+                      if [ -z "$REDHAT_MINOR_RELEASE" ]; then
+                        fail_with_message "cannot determine os minor release, check if redhat-release-server package is installed correctly"
+                      fi
+        
+                      if [ "$REDHAT_MINOR_RELEASE" -gt 5 ]; then
+                        echo "OS has been updated"
+                      else 
+                        fail_with_message "OS version has not been updated"
+                      fi
+
+  AWSCloudWatchAgentComponent:
+    Type: AWS::ImageBuilder::Component
+    Properties:
+      Name: AWSCloudWatchAgentInstall
+      Version: 0.0.1
+      Description: Install AWS CloudWatch Agent
+      ChangeDescription: Initial Release
+      Platform: Linux
+      Data: |
+        name: InstallCloudWatchAgent
+        description: Downloads and Installs latest AWS CloudWatch Agent
+        schemaVersion: 1.0
+
+        phases:
+          - name: build
+            steps:
+              - name: CloudWatchAgentInstall
+                action: ExecuteBash
+                inputs:
+                  commands:
+                    - |
+                      cd /tmp
+                      sudo yum install -y https://s3.eu-west-1.amazonaws.com/amazoncloudwatch-agent-eu-west-1/redhat/amd64/latest/amazon-cloudwatch-agent.rpm
+                      sudo rpm -U /var/tmp/amazon-cloudwatch-agent.rpm
+                      sudo systemctl enable amazon-cloudwatch-agent
+                      sudo systemctl start amazon-cloudwatch-agent
+
+          - name: validate
+            steps:
+              - name: CloudWatchAgentValidate
+                action: ExecuteBash
+                inputs:
+                  commands:
+                    - |
+                      INSTALLED=$(rpm -q amazon-cloudwatch-agent)
+
+                      function fail_with_message() {
+                        1>&2 echo $1
+                        exit 1
+                      }
+
+                      if [ -z "$INSTALLED" ]; then
+                        fail_with_message "FATAL: AWS CloudWatch Agent has not been installed"
+                      fi
+  
+          - name: test
+            steps:
+              - name: CloudWatchAgentTest
+                action: ExecuteBash
+                inputs:
+                  commands:
+                    - |
+                      function fail_with_message() {
+                        1>&2 echo $1
+                        exit 1
+                      }
+
+                      # ================================================================================
+                      # Test agent binary is in the expected location and executes --version as expected
+                      # ================================================================================
+                      if [ -x /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent ]; then
+                        TEST=$(/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent --version)                
+                        if [ $? -ne 0 ]; then
+                          fail_with_message "FATAL: Cloudwatch agent is installed but did not run as expected"
+                        fi
+                      else
+                        fail_with_message "FATAL: Cannot find amazon-cloudwatch-agent binary"
+                      fi
+
+  # Recipe which references the latest (x.x.x) version of Redhat Enterprise Linux 7).
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-imagebuilder-imagerecipe.html
+  CENTOSServer7ImageRecipe:
+    Type: AWS::ImageBuilder::ImageRecipe
+    Properties:
+      Name: CENTOS_Server7
+      Version: 0.0.1
+      # ${AWS::Partition} returns the partition where you are running the CloudFormation template. For standard AWS regions, the
+      # partition is aws. For resources elsewhere, the partition is aws-partitionname. For example, China (Beijing and Ningxia)
+      # regions use aws-cn and AWS GovCloud (US) regions are aws-us-gov.
+      # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/pseudo-parameter-reference.html
+      ParentImage:
+        Fn::Sub: arn:${AWS::Partition}:imagebuilder:${AWS::Region}:aws:image/centos-linux-7-minimal-x86/x.x.x
+      Components:
+        - ComponentArn: 
+            Ref: CENTOSServer7UpdateComponent
+        - ComponentArn: 
+            Ref: AWSCloudWatchAgentComponent
+
+  # The Image resource will show complete in CloudFormation once your image is done building. Use this resource later in your
+  # stack to reference the image within other resources.
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-imagebuilder-image.html
+  CENTOSServer7withAWSAgent:
+    Type: AWS::ImageBuilder::Image
+    Properties:
+      ImageRecipeArn:
+        Ref: CENTOSServer7ImageRecipe
+      InfrastructureConfigurationArn:
+        Ref: CENTOSServer7ImageInfrastructureConfiguration
+
+  # Create an SSM Parameter Store entry with our resulting ImageId.
+  # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssm-parameter.html
+  CENTOSServer7withAWSAgentParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Description: Image Id for CENTOS Server 7 with AWS Agent
+      Name: /Test/Images/CENTOSServer7withAWSAgent
+      Type: String
+      Value:
+        Fn::GetAtt: [CENTOSServer7withAWSAgent, ImageId]
+...
