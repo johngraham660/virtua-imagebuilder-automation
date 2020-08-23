@@ -238,7 +238,7 @@ Resources:
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-imagebuilder-image.html
   CENTOSServer7withAWSAgent:
     Type: AWS::ImageBuilder::Image
-    Properties:
+    Properties;
       ImageRecipeArn:
         Ref: CENTOSServer7ImageRecipe
       InfrastructureConfigurationArn:
