@@ -7,6 +7,8 @@
 
 ### Introduction
 
+![Validate CloudFormation Pipeline](images/cfn-validate-pipeline.jpg)
+
 ### Architecture
 
 ### AWS CodeCommit
