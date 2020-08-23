@@ -114,21 +114,21 @@ Resources:
                 - '028356534209' # AWS - phoenix-development
 
   # Defines the image pipeline
-  ImagePipelineAllParameters:
-    Type: AWS::ImageBuilder::ImagePipeline
-    Properties:
-      Name: VIRTUA-RHEL7-BUILD-IMAGE-PIPELINE
-      Description: A RHEL7 test pipeline
-      ImageRecipeArn: RHELServer7ImageRecipe
-      InfrastructureConfigurationArn: RHELServer7ImageInfrastructureConfiguration
-      DistributionConfigurationArn: DistributionConfigurationAllParameters
-      ImageTestsConfiguration:
-        ImageTestsEnabled: false
-        TimeoutMinutes: 90
-      Schedule:
-        ScheduleExpression: 'cron(0 0 * * 0)'
-        PipelineExecutionStartCondition: 'EXPRESSION_MATCH_ONLY'
-      Status: 'DISABLED'
+  #ImagePipelineAllParameters:
+  #  Type: AWS::ImageBuilder::ImagePipeline
+  #  Properties:
+  #    Name: VIRTUA-RHEL7-BUILD-IMAGE-PIPELINE
+  #    Description: A RHEL7 test pipeline
+  #    ImageRecipeArn: RHELServer7ImageRecipe
+  #    InfrastructureConfigurationArn: RHELServer7ImageInfrastructureConfiguration
+  #    DistributionConfigurationArn: DistributionConfigurationAllParameters
+  #    ImageTestsConfiguration:
+  #      ImageTestsEnabled: false
+  #      TimeoutMinutes: 90
+  #    Schedule:
+  #      ScheduleExpression: 'cron(0 0 * * 0)'
+  #      PipelineExecutionStartCondition: 'EXPRESSION_MATCH_ONLY'
+  #    Status: 'DISABLED'
 
   # =======================================================================================
   # This sections defines all of the build components we want to deploy in the image recipe
