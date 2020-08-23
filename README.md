@@ -12,10 +12,10 @@
 ### AWS CodeCommit
 Our CodeCommit repository contains all of the Cloudformation templates required to deploy all of the EC2ImageBuilder resources which include :-
 
-  * Infrastructure Configurations
-  * Distribution Configurations
-  * Build Components
-  * Test Components
+  * Infrastructure configurations
+  * Distribution configurations
+  * Build components
+  * Test components
   * Image recipes
   * Image pipelines
 
