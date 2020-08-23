@@ -7,7 +7,9 @@
 
 ### Introduction
 
-![Validate CloudFormation Pipeline](images/cfn-validate-pipeline.jpg)
+![Validate CloudFormation Pipeline](./images/cfn-validate-pipeline.jpg)
+
+
 
 ### Architecture
 
