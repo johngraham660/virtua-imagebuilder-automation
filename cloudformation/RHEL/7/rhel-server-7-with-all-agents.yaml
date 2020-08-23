@@ -7,7 +7,7 @@ Resources:
   # Create an S3 Bucket for logs.
   # When deleting the stack, make sure to empty the bucket first.
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-s3-bucket.html
-  ImageBuilderLogBucket;
+  ImageBuilderLogBucket:
     Type: AWS::S3::Bucket
     # If you want to delete the stack, but keep the bucket, set the DelectionPolicy to Retain.
     # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-attribute-deletionpolicy.html
