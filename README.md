@@ -9,8 +9,6 @@
 
 ![Validate CloudFormation Pipeline](./images/cfn-validate-pipeline.jpg)
 
-
-
 ### Architecture
 
 ### AWS CodeCommit
@@ -28,5 +26,3 @@ CodeBuild provides the Continous Integration component of our pipeline, it is re
 
 ### AWS CodePipeline
 In addition to CodeBuild, we are using CodePipeline to validates the CloudFormation templates and push them to our S3 bucket. The pipeline calls the corresponding CodeBuild project to validate each template, then deploys the valid CloudFormation templates to S3.
-
-```testing```
