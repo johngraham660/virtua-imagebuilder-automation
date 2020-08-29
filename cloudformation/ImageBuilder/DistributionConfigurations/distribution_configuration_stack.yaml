@@ -1,0 +1,24 @@
+---
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+AWSTemplateFormatVersion: 2010-09-09
+
+Resources:
+  DistributionConfigurationAllParameters:
+    Type: AWS::ImageBuilder::DistributionConfiguration
+    Properties:
+      Name: 'VIRTUA-RHEL7-Distribution'
+      Description: 'Distribution Config for RHEL7 AMI to Dev & Prod Project Accounts'
+      Distributions:
+        - Region: 'eu-west-1'
+          AmiDistributionConfiguration:
+            Name: 'VIRTUA-RHEL7-AMI-{{ imagebuilder:buildDate }}'
+            Description: 'Redhat Enterprise Linux 7 x86 - Hourly'
+            AmiTags:
+              AmiTagKey: 'ami-tag-key'
+            LaunchPermissionConfiguration:
+              UserIds:
+                - '724381094392' # AWS - ebberon-development
+                - '466396542184' # AWS - ebberon-production
+                - '028356534209' # AWS - phoenix-development
+                - '831646976994' # AWS - phoenix-production

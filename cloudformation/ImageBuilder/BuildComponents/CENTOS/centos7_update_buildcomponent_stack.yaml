@@ -1,0 +1,52 @@
+---
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+AWSTemplateFormatVersion: 2010-09-09
+
+Resources:
+  CENTOSServer7UpdateComponent:
+    Type: AWS::ImageBuilder::Component
+    Properties:
+      Name:  CENTOSServer7Update
+      Version: 0.0.1
+      Description: Update all installed RPM's to latest hosted on RHUI
+      ChangeDescription: Initial Release
+      Platform: Linux
+      Data: |
+        name: 'update_centos_image'
+        description: 'Updates the base centos image to the latest patch release'
+        schemaVersion: 1.0
+        phases:
+          - name: build
+            steps:
+              - name: update
+                action: ExecuteBash
+                onFailure: Abort
+                inputs:
+                  commands:
+                    - |
+                      sudo yum -y update
+        
+          - name: validate
+            steps:
+              - name: validateUpdate
+                action: ExecuteBash
+                inputs:
+                  commands:
+                    - |
+                      CENTOS_MINOR_RELEASE=$(rpm -qi centos-release | grep ^Release | awk -F: '{print $2}' | awk -F. '{print $1}' | sed 's/ //g')
+        
+                      function fail_with_message() {
+                        1>&2 echo $1
+                        exit 1
+                      }
+        
+                      if [ -z "$CENTOS_MINOR_RELEASE" ]; then
+                        fail_with_message "cannot determine os minor release, check if centos-release-server package is installed correctly"
+                      fi
+        
+                      if [ "$CENTOS_MINOR_RELEASE" -gt 5 ]; then
+                        echo "OS has been updated"
+                      else 
+                        fail_with_message "OS version has not been updated"
+                      fi
