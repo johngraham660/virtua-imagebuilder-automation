@@ -129,7 +129,7 @@ Resources:
                 inputs:
                   commands:
                     - |
-                      CENTOS_MINOR_RELEASE=$(rpm -qi centos-release-server | grep ^Version | awk -F: '{print $2}' | awk -F. '{print $2}' | sed 's/ //g')
+                      CENTOS_MINOR_RELEASE=$(rpm -qi centos-release | grep ^Release | awk -F: '{print $2}' | awk -F. '{print $1}' | sed 's/ //g')
         
                       function fail_with_message() {
                         1>&2 echo $1
