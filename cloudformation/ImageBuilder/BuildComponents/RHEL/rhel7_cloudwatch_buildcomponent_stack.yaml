@@ -12,6 +12,8 @@ Resources:
       Description: Install AWS CloudWatch Agent
       ChangeDescription: Initial Release
       Platform: Linux
+      SupportedOsVersions: 
+        - Red Hat Enterprise Linux 7
       Data: |
         name: InstallCloudWatchAgent
         description: Downloads and Installs latest AWS CloudWatch Agent
