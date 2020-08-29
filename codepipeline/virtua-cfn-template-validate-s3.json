@@ -1,0 +1,103 @@
+{
+    "pipeline": {
+        "name": "virtua-cfn-template-validate-s3",
+        "roleArn": "arn:aws:iam::501407874846:role/service-role/AWSCodePipelineServiceRole-eu-west-1-virtua-cfn-template-valida",
+        "artifactStore": {
+            "type": "S3",
+            "location": "codepipeline-eu-west-1-834624945625"
+        },
+        "stages": [
+            {
+                "name": "Source",
+                "actions": [
+                    {
+                        "name": "Source",
+                        "actionTypeId": {
+                            "category": "Source",
+                            "owner": "AWS",
+                            "provider": "CodeCommit",
+                            "version": "1"
+                        },
+                        "runOrder": 1,
+                        "configuration": {
+                            "BranchName": "development",
+                            "PollForSourceChanges": "false",
+                            "RepositoryName": "virtua_imagebuilder_automation"
+                        },
+                        "outputArtifacts": [
+                            {
+                                "name": "SourceArtifact"
+                            }
+                        ],
+                        "inputArtifacts": [],
+                        "region": "eu-west-1",
+                        "namespace": "SourceVariables"
+                    }
+                ]
+            },
+            {
+                "name": "Build",
+                "actions": [
+                    {
+                        "name": "Build",
+                        "actionTypeId": {
+                            "category": "Build",
+                            "owner": "AWS",
+                            "provider": "CodeBuild",
+                            "version": "1"
+                        },
+                        "runOrder": 1,
+                        "configuration": {
+                            "ProjectName": "virtua-validate-cfn-templates"
+                        },
+                        "outputArtifacts": [
+                            {
+                                "name": "BuildArtifact"
+                            }
+                        ],
+                        "inputArtifacts": [
+                            {
+                                "name": "SourceArtifact"
+                            }
+                        ],
+                        "region": "eu-west-1",
+                        "namespace": "BuildVariables"
+                    }
+                ]
+            },
+            {
+                "name": "Deploy",
+                "actions": [
+                    {
+                        "name": "Deploy",
+                        "actionTypeId": {
+                            "category": "Deploy",
+                            "owner": "AWS",
+                            "provider": "S3",
+                            "version": "1"
+                        },
+                        "runOrder": 1,
+                        "configuration": {
+                            "BucketName": "virtua-cloudformation-templates",
+                            "Extract": "true"
+                        },
+                        "outputArtifacts": [],
+                        "inputArtifacts": [
+                            {
+                                "name": "BuildArtifact"
+                            }
+                        ],
+                        "region": "eu-west-1",
+                        "namespace": "DeployVariables"
+                    }
+                ]
+            }
+        ],
+        "version": 2
+    },
+    "metadata": {
+        "pipelineArn": "arn:aws:codepipeline:eu-west-1:501407874846:virtua-cfn-template-validate-s3",
+        "created": 1598134948.676,
+        "updated": 1598195464.981
+    }
+}
