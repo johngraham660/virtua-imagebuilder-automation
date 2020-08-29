@@ -1,0 +1,74 @@
+---
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+AWSTemplateFormatVersion: 2010-09-09
+
+Resources:
+  AWSCloudWatchAgentComponent:
+    Type: AWS::ImageBuilder::Component
+    Properties:
+      Name: AWSCloudWatchAgentInstall
+      Version: 0.0.1
+      Description: Install AWS CloudWatch Agent
+      ChangeDescription: Initial Release
+      Platform: Linux
+      Data: |
+        name: InstallCloudWatchAgent
+        description: Downloads and Installs latest AWS CloudWatch Agent
+        schemaVersion: 1.0
+
+        phases:
+          - name: build
+            steps:
+              - name: CloudWatchAgentInstall
+                action: ExecuteBash
+                inputs:
+                  commands:
+                    - |
+                      cd /tmp
+                      sudo yum install -y https://s3.eu-west-1.amazonaws.com/amazoncloudwatch-agent-eu-west-1/redhat/amd64/latest/amazon-cloudwatch-agent.rpm
+                      sudo rpm -U /var/tmp/amazon-cloudwatch-agent.rpm
+                      sudo systemctl enable amazon-cloudwatch-agent
+                      sudo systemctl start amazon-cloudwatch-agent
+
+          - name: validate
+            steps:
+              - name: CloudWatchAgentValidate
+                action: ExecuteBash
+                inputs:
+                  commands:
+                    - |
+                      INSTALLED=$(rpm -q amazon-cloudwatch-agent)
+
+                      function fail_with_message() {
+                        1>&2 echo $1
+                        exit 1
+                      }
+
+                      if [ -z "$INSTALLED" ]; then
+                        fail_with_message "FATAL: AWS CloudWatch Agent has not been installed"
+                      fi
+  
+          - name: test
+            steps:
+              - name: CloudWatchAgentTest
+                action: ExecuteBash
+                inputs:
+                  commands:
+                    - |
+                      function fail_with_message() {
+                        1>&2 echo $1
+                        exit 1
+                      }
+
+                      # ================================================================================
+                      # Test agent binary is in the expected location and executes --version as expected
+                      # ================================================================================
+                      if [ -x /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent ]; then
+                        TEST=$(/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent --version)                
+                        if [ $? -ne 0 ]; then
+                          fail_with_message "FATAL: Cloudwatch agent is installed but did not run as expected"
+                        fi
+                      else
+                        fail_with_message "FATAL: Cannot find amazon-cloudwatch-agent binary"
+                      fi
