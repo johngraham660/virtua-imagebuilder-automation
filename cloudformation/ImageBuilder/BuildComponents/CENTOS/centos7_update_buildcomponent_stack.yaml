@@ -8,10 +8,12 @@ Resources:
     Type: AWS::ImageBuilder::Component
     Properties:
       Name:  CENTOSServer7Update
-      Version: 0.0.1
       Description: Update all installed RPM's to latest hosted on RHUI
-      ChangeDescription: Initial Release
       Platform: Linux
+      SupportedOsVersions:
+        - CentOS Linux 7
+      Version: 0.0.1
+      ChangeDescription: Initial Release
       Data: |
         name: 'update_centos_image'
         description: 'Updates the base centos image to the latest patch release'

@@ -9,10 +9,12 @@ Resources:
     Type: AWS::ImageBuilder::Component
     Properties:
       Name: CENTOSAWSCloudWatchAgentInstall
-      Version: 0.0.1
       Description: Install AWS CloudWatch Agent
-      ChangeDescription: Initial Release
       Platform: Linux
+      SupportedOsVersions:
+        - CentOS Linux 7
+      Version: 0.0.1
+      ChangeDescription: Initial Release
       Data: |
         name: InstallCloudWatchAgent
         description: Downloads and Installs latest AWS CloudWatch Agent
