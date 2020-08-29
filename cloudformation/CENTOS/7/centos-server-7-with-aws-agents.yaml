@@ -128,18 +128,18 @@ Resources:
                 inputs:
                   commands:
                     - |
-                      REDHAT_MINOR_RELEASE=$(rpm -qi redhat-release-server | grep ^Version | awk -F: '{print $2}' | awk -F. '{print $2}' | sed 's/ //g')
+                      CENTOS_MINOR_RELEASE=$(rpm -qi centos-release-server | grep ^Version | awk -F: '{print $2}' | awk -F. '{print $2}' | sed 's/ //g')
         
                       function fail_with_message() {
                         1>&2 echo $1
                         exit 1
                       }
         
-                      if [ -z "$REDHAT_MINOR_RELEASE" ]; then
-                        fail_with_message "cannot determine os minor release, check if redhat-release-server package is installed correctly"
+                      if [ -z "$CENTOS_MINOR_RELEASE" ]; then
+                        fail_with_message "cannot determine os minor release, check if centos-release-server package is installed correctly"
                       fi
         
-                      if [ "$REDHAT_MINOR_RELEASE" -gt 5 ]; then
+                      if [ "$CENTOS_MINOR_RELEASE" -gt 5 ]; then
                         echo "OS has been updated"
                       else 
                         fail_with_message "OS version has not been updated"
@@ -167,7 +167,7 @@ Resources:
                   commands:
                     - |
                       cd /tmp
-                      sudo yum install -y https://s3.eu-west-1.amazonaws.com/amazoncloudwatch-agent-eu-west-1/redhat/amd64/latest/amazon-cloudwatch-agent.rpm
+                      sudo yum install -y https://s3.eu-west-1.amazonaws.com/amazoncloudwatch-agent-eu-west-1/centos/amd64/latest/amazon-cloudwatch-agent.rpm
                       sudo rpm -U /var/tmp/amazon-cloudwatch-agent.rpm
                       sudo systemctl enable amazon-cloudwatch-agent
                       sudo systemctl start amazon-cloudwatch-agent
@@ -214,7 +214,7 @@ Resources:
                         fail_with_message "FATAL: Cannot find amazon-cloudwatch-agent binary"
                       fi
 
-  # Recipe which references the latest (x.x.x) version of Redhat Enterprise Linux 7).
+  # Recipe which references the latest (x.x.x) version of Centos Linux 7).
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-imagebuilder-imagerecipe.html
   CENTOSServer7ImageRecipe:
     Type: AWS::ImageBuilder::ImageRecipe
