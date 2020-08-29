@@ -3,28 +3,26 @@
 # =================================================
 # Deploy the EC2ImageBuilder Cloudformationn Stacks
 # =================================================
-
+REGION="eu-west-1"
+BUCKET="virtua-cloudformation-templates"
 STACKFILES="centos7-cloudwatch-buildcomponent-stack \
             centos7-update-buildcomponent-stack \
             rhel7-update-buildcomponent-stack \
             rhel7-cloudwatch-buildcomponent-stack"
 
-
-# Debug
-aws cloudformation list-stacks
-
 # ============================
 # Delete buildcomponent stacks
 # ============================
-for stack in ${STACKFILES}
+for STACK in ${STACKFILES}
 do
-  aws cloudformation delete-stack --stack-name ${stack}
+  aws cloudformation delete-stack --stack-name ${STACK}
+  sleep 5
 done
 
 # ============================
 # Create buildcomponent stacks
 # ============================
-for stack in ${STACKFILES}
+for STACK in ${STACKFILES}
 do
-  aws cloudformation create-stack --stack-name ${stack} --template-url https://virtua-cloudformation-templates.s3-eu-west-1.amazonaws.com/${stack}.yaml
+  aws cloudformation create-stack --stack-name ${STACK} --template-url https://${BUCKET}.s3-${REGION}.amazonaws.com/${STACK}.yaml
 done
