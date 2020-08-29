@@ -8,7 +8,7 @@ Resources:
   AWSCloudWatchAgentComponent:
     Type: AWS::ImageBuilder::Component
     Properties:
-      Name: AWSCloudWatchAgentInstall
+      Name: CENTOSAWSCloudWatchAgentInstall
       Version: 0.0.1
       Description: Install AWS CloudWatch Agent
       ChangeDescription: Initial Release

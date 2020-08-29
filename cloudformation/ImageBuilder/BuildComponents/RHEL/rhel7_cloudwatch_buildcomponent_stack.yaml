@@ -7,7 +7,7 @@ Resources:
   AWSCloudWatchAgentComponent:
     Type: AWS::ImageBuilder::Component
     Properties:
-      Name: AWSCloudWatchAgentInstall
+      Name: RHELAWSCloudWatchAgentInstall
       Version: 0.0.1
       Description: Install AWS CloudWatch Agent
       ChangeDescription: Initial Release
