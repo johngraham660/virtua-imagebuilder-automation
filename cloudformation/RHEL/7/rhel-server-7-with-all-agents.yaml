@@ -3,6 +3,11 @@
 # SPDX-License-Identifier: MIT-0
 AWSTemplateFormatVersion: 2010-09-09
 
+Parameters:
+  InstanceType:
+    Type: 'AWS::SSM::Parameter::Value<String>'
+    Default: EC2ImageBuilderInstanceTyp
+
 Resources:
   # Create an S3 Bucket for logs.
   # When deleting the stack, make sure to empty the bucket first.
@@ -78,7 +83,7 @@ Resources:
       InstanceProfileName:
         Ref: InstanceProfile
       InstanceTypes:
-        - t2.micro
+        - !Ref InstanceType
       # Specify an S3 bucket and EC2 Image Builder will save logs to the bucket.
       Logging:
         S3Logs:
