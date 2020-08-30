@@ -15,6 +15,7 @@ STACKFILES="centos7-cloudwatch-buildcomponent-stack \
 # ============================
 for STACK in ${STACKFILES}
 do
+  echo "Deleting Stack: ${STACK}"
   aws cloudformation delete-stack --stack-name ${STACK}
   sleep 5
 done
@@ -24,5 +25,6 @@ done
 # ============================
 for STACK in ${STACKFILES}
 do
+  echo "Creating Stack: ${STACK}"
   aws cloudformation create-stack --stack-name ${STACK} --template-url https://${BUCKET}.s3-${REGION}.amazonaws.com/${STACK}.yaml
 done
