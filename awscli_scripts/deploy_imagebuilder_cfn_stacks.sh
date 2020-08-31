@@ -4,7 +4,6 @@
 # Deploy the EC2ImageBuilder Cloudformationn Stacks
 # =================================================
 
-
 function deleteStack() {
   # ============================
   # Delete buildcomponent stacks
@@ -37,10 +36,6 @@ function usage() {
   echo "  --help,   -h : Show this usage message"
 }
 
-# ====
-# Main
-# ====
-
 # =======================================
 # Check the user supplied a vailid input.
 # =======================================
@@ -55,11 +50,13 @@ main() {
     exit 1
   else
     # We found credentials but no idea if they work
-    STACKFILES=$(aws s3 ls s3://${BUCKET} | grep buildcomponent-stack.yaml | awk '{print $NF}')
-    echo "DEBUG: ${STACKFILES}"
-    echo "DEBUG: ${BUCKET}"
+    # Let's try declaring an array and test the number of elements in the array
+    # and fail if the number of elements is zero.
+    declare -a STACKFILES=$(aws s3 ls s3://${BUCKET} | grep buildcomponent-stack.yaml | awk '{print $NF}'| sed 's/.yaml//g')
+    #echo "DEBUG: ${STACKFILES}"
+    #echo "DEBUG: ${BUCKET}"
 
-    if [ -z ${STACKFILES} ]
+    if [ ${#STACKFILES[@]} -eq 0 ]
     then
       # STACK files is empty, either way lets exit as we have no templates
       echo "Cannot identify the CloudFormation template names"
