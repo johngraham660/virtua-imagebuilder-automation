@@ -1,6 +1,6 @@
 ---
 # ==================================================
-# Virtua build component to install CloudWatch Agent
+# Custom build component to install CloudWatch Agent
 # ==================================================
 name: 'virtua_install_cloudwatch_agent'
 description: 'A custom build component to install the AWS CloudWatch agent'

@@ -1,6 +1,6 @@
 ---
 # =================================================
-# Virtua build component to update Base RHEL7 image
+# Custom build component to update Base RHEL7 image
 # =================================================
 name: 'update_rhel_image'
 description: 'Updates the base rhel image to the latest patch release provided by RHUI'
