@@ -7,7 +7,7 @@ Resources:
   CENTOSServer7UpdateComponent:
     Type: AWS::ImageBuilder::Component
     Properties:
-      Name:  CENTOSServer7Update
+      Name:  CENTOS7-OS-Update
       Description: Update all installed RPM's to latest hosted on RHUI
       Platform: Linux
       SupportedOsVersions:

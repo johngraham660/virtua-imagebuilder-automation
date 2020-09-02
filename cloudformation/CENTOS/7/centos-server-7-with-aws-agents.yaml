@@ -81,6 +81,8 @@ Resources:
       Name: CENTOSServer7-Image-Infrastructure-Configuration
       InstanceProfileName:
         Ref: InstanceProfile
+      # The InstanceType to use for the build and test instances
+      # This is a parameter passed in from the SSM Parameter Store
       InstanceTypes: 
         - !Ref InstanceType
       # Specify an S3 bucket and EC2 Image Builder will save logs to the bucket.

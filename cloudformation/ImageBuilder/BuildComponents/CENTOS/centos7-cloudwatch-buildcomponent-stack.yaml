@@ -8,8 +8,8 @@ Resources:
   AWSCloudWatchAgentComponent:
     Type: AWS::ImageBuilder::Component
     Properties:
-      Name: CENTOSAWSCloudWatchAgentInstall
-      Description: Install AWS CloudWatch Agent
+      Name: CENTOS7-AWSCloudWatchAgentInstall
+      Description: Installs the latest version of the AWS CloudWatch agent. Additional steps are required to configure and use CloudWatch.
       Platform: Linux
       SupportedOsVersions:
         - CentOS Linux 7
@@ -75,3 +75,7 @@ Resources:
                       else
                         fail_with_message "FATAL: Cannot find amazon-cloudwatch-agent binary"
                       fi
+  Outputs:
+    
+
+                      

@@ -7,11 +7,13 @@ Resources:
   RHELServer7UpdateComponent:
     Type: AWS::ImageBuilder::Component
     Properties:
-      Name:  RHELServer7Update
+      Name:  RHEL7-OS-Update
       Version: 0.0.1
       Description: Update all installed RPM's to latest hosted on RHUI
       ChangeDescription: Initial Release
       Platform: Linux
+      SupportedOsVersions:
+        - Red Hat Enterprise Linux 7 
       Data: |
         name: 'update_rhel_image'
         description: 'Updates the base rhel image to the latest patch release provided by RHUI'

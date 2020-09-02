@@ -22,3 +22,5 @@ Resources:
                 - '466396542184' # AWS - ebberon-production
                 - '028356534209' # AWS - phoenix-development
                 - '831646976994' # AWS - phoenix-production
+  Outputs:
+    
