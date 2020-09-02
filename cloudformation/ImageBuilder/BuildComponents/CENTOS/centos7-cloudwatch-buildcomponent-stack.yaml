@@ -75,7 +75,6 @@ Resources:
                       else
                         fail_with_message "FATAL: Cannot find amazon-cloudwatch-agent binary"
                       fi
-  Outputs:
     
 
                       
