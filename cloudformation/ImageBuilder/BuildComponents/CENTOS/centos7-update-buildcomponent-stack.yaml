@@ -8,7 +8,7 @@ Resources:
     Type: AWS::ImageBuilder::Component
     Properties:
       Name:  CENTOS7-OS-Update
-      Description: Update all installed RPM's to latest hosted on RHUI
+      Description: Update all installed RPM's to latest versions
       Platform: Linux
       SupportedOsVersions:
         - CentOS Linux 7
@@ -52,3 +52,9 @@ Resources:
                       else 
                         fail_with_message "OS version has not been updated"
                       fi
+Outputs:
+  ComponentARN:
+    Description: The ARN of the build component
+    Value: !Ref CENTOSServer7UpdateComponent
+    Export:
+      Name: !Sub "${AWS::StackName}-ARN"
