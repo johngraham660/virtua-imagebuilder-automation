@@ -121,9 +121,11 @@ Resources:
         Fn::Sub: arn:${AWS::Partition}:imagebuilder:${AWS::Region}:aws:image/centos-linux-7-minimal-x86/x.x.x
       Components:
         - ComponentArn: 
-            Fn::Sub: ${UpdateBuildComponentStackName}-ARN
+            Fn::ImportValue:
+              Fn::Sub: ${UpdateBuildComponentStackName}-ARN
         - ComponentArn: 
-            Fn::Sub: ${CloudWatchBuildComponentStackName}-ARN
+            Fn::ImportValue:
+              Fn::Sub: ${CloudWatchBuildComponentStackName}-ARN
 
   # The Image resource will show complete in CloudFormation once your image is done building. Use this resource later in your
   # stack to reference the image within other resources.
