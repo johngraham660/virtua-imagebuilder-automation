@@ -130,22 +130,22 @@ Resources:
   # The Image resource will show complete in CloudFormation once your image is done building. Use this resource later in your
   # stack to reference the image within other resources.
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-imagebuilder-image.html
-  #CENTOSServer7withAWSAgent:
-  #  Type: AWS::ImageBuilder::Image
-  #  Properties:
-  #    ImageRecipeArn:
-  #      Ref: CENTOSServer7ImageRecipe
-  #    InfrastructureConfigurationArn:
-  #      Ref: CENTOSServer7ImageInfrastructureConfiguration
+  CENTOSServer7withAWSAgent:
+    Type: AWS::ImageBuilder::Image
+    Properties:
+      ImageRecipeArn:
+        Ref: CENTOSServer7ImageRecipe
+      InfrastructureConfigurationArn:
+        Ref: CENTOSServer7ImageInfrastructureConfiguration
 
   # Create an SSM Parameter Store entry with our resulting ImageId.
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssm-parameter.html
-  #CENTOSServer7withAWSAgentParameter:
-  #  Type: AWS::SSM::Parameter
-  #  Properties:
-  #    Description: Image Id for CENTOS Server 7 with AWS Agent
-  #    Name: /Test/Images/CENTOSServer7withAWSAgent
-  #    Type: String
-  #    Value:
-  #      Fn::GetAtt: [CENTOSServer7withAWSAgent, ImageId]
+  CENTOSServer7withAWSAgentsParameter:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Description: Image Id for CENTOS Server 7 with AWS Agents
+      Name: /Test/Images/CENTOSServer7withAWSAgents
+      Type: String
+      Value:
+        Fn::GetAtt: [CENTOSServer7withAWSAgent, ImageId]
 ...
