@@ -136,7 +136,7 @@ Resources:
       ImageRecipeArn:
         Ref: CENTOSServer7ImageRecipe
       InfrastructureConfigurationArn:
-        Ref: CENTOSServer7ImageInfrastructureConfiguration
+        Ref: CENTOS7ServerImageInfrastructureConfiguration
 
   # Create an SSM Parameter Store entry with our resulting ImageId.
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-ssm-parameter.html
