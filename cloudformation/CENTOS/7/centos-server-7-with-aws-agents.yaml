@@ -4,8 +4,20 @@
 AWSTemplateFormatVersion: 2010-09-09
 Parameters:
   InstanceType:
-    Type: 'AWS::SSM::Parameter::Value<String>'
-    Default: EC2ImageBuilderInstanceType
+    Type: "AWS::SSM::Parameter::Value<String>"
+    Default: "EC2ImageBuilderInstanceType"
+  UpdateBuildComponentStackName:
+    Type: String
+    MinLength: 1
+    MaxLength: 255
+    AllowedPattern: "^[a-zA-Z][-a-zA-Z0-9]*$"
+    Default: "centos7-update-buildcomponent-stack"
+  CloudWatchBuildComponentStackName:
+    Type: String
+    MinLength: 1
+    MaxLength: 255
+    AllowedPattern: "^[a-zA-Z][-a-zA-Z0-9]*$"
+    Default: "centos7-cloudwatch-buildcomponent-stack"
 
 Resources:
   # Create an S3 Bucket for logs.
@@ -98,22 +110,22 @@ Resources:
 
   # Recipe which references the latest (x.x.x) version of Centos Linux 7).
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-imagebuilder-imagerecipe.html
-  #CENTOSServer7ImageRecipe:
-  #  Type: AWS::ImageBuilder::ImageRecipe
-  #  Properties:
-  #    Name: CENTOS7-Server-recipe
-  #    Version: 0.0.1
-  #    # ${AWS::Partition} returns the partition where you are running the CloudFormation template. For standard AWS regions, the
-  #    # partition is aws. For resources elsewhere, the partition is aws-partitionname. For example, China (Beijing and Ningxia)
-  #    # regions use aws-cn and AWS GovCloud (US) regions are aws-us-gov.
-  #    # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/pseudo-parameter-reference.html
-  #    ParentImage:
-  #      Fn::Sub: arn:${AWS::Partition}:imagebuilder:${AWS::Region}:aws:image/centos-linux-7-minimal-x86/x.x.x
-  #    Components:
-  #      - ComponentArn: 
-  #          Ref: CENTOSServer7UpdateComponent
-  #      - ComponentArn: 
-  #          Ref: AWSCloudWatchAgentComponent
+  CENTOSServer7ImageRecipe:
+    Type: AWS::ImageBuilder::ImageRecipe
+    Properties:
+      Name: CENTOS7-Server-recipe
+      Version: 0.0.1
+      # ${AWS::Partition} returns the partition where you are running the CloudFormation template. For standard AWS regions, the
+      # partition is aws. For resources elsewhere, the partition is aws-partitionname. For example, China (Beijing and Ningxia)
+      # regions use aws-cn and AWS GovCloud (US) regions are aws-us-gov.
+      # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/pseudo-parameter-reference.html
+      ParentImage:
+        Fn::Sub: arn:${AWS::Partition}:imagebuilder:${AWS::Region}:aws:image/centos-linux-7-minimal-x86/x.x.x
+      Components:
+        - ComponentArn: 
+            Fn::Sub: ${UpdateBuildComponentStackName}-ARN
+        - ComponentArn: 
+            Fn::Sub: ${CloudWatchBuildComponentStackName}-ARN
 
   # The Image resource will show complete in CloudFormation once your image is done building. Use this resource later in your
   # stack to reference the image within other resources.
