@@ -75,6 +75,9 @@ Resources:
                       else
                         fail_with_message "FATAL: Cannot find amazon-cloudwatch-agent binary"
                       fi
-    
-
-                      
+Outputs:
+  ComponentARN:
+    Description: The ARN of the build component
+    Value: !Ref AWSCloudWatchAgentComponent
+    Export:
+      Name: !Sub "${AWS::StackName}-ARN"
