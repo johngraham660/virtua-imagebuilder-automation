@@ -1,0 +1,155 @@
+{
+    "name": "",
+    "description": "",
+    "source": {
+        "type": "GITHUB_ENTERPRISE",
+        "location": "",
+        "gitCloneDepth": 0,
+        "gitSubmodulesConfig": {
+            "fetchSubmodules": true
+        },
+        "buildspec": "",
+        "auth": {
+            "type": "OAUTH",
+            "resource": ""
+        },
+        "reportBuildStatus": true,
+        "buildStatusConfig": {
+            "context": "",
+            "targetUrl": ""
+        },
+        "insecureSsl": true,
+        "sourceIdentifier": ""
+    },
+    "secondarySources": [
+        {
+            "type": "BITBUCKET",
+            "location": "",
+            "gitCloneDepth": 0,
+            "gitSubmodulesConfig": {
+                "fetchSubmodules": true
+            },
+            "buildspec": "",
+            "auth": {
+                "type": "OAUTH",
+                "resource": ""
+            },
+            "reportBuildStatus": true,
+            "buildStatusConfig": {
+                "context": "",
+                "targetUrl": ""
+            },
+            "insecureSsl": true,
+            "sourceIdentifier": ""
+        }
+    ],
+    "sourceVersion": "",
+    "secondarySourceVersions": [
+        {
+            "sourceIdentifier": "",
+            "sourceVersion": ""
+        }
+    ],
+    "artifacts": {
+        "type": "NO_ARTIFACTS",
+        "location": "",
+        "path": "",
+        "namespaceType": "BUILD_ID",
+        "name": "",
+        "packaging": "ZIP",
+        "overrideArtifactName": true,
+        "encryptionDisabled": true,
+        "artifactIdentifier": ""
+    },
+    "secondaryArtifacts": [
+        {
+            "type": "NO_ARTIFACTS",
+            "location": "",
+            "path": "",
+            "namespaceType": "BUILD_ID",
+            "name": "",
+            "packaging": "ZIP",
+            "overrideArtifactName": true,
+            "encryptionDisabled": true,
+            "artifactIdentifier": ""
+        }
+    ],
+    "cache": {
+        "type": "S3",
+        "location": "",
+        "modes": [
+            "LOCAL_DOCKER_LAYER_CACHE"
+        ]
+    },
+    "environment": {
+        "type": "ARM_CONTAINER",
+        "image": "",
+        "computeType": "BUILD_GENERAL1_MEDIUM",
+        "environmentVariables": [
+            {
+                "name": "",
+                "value": "",
+                "type": "SECRETS_MANAGER"
+            }
+        ],
+        "privilegedMode": true,
+        "certificate": "",
+        "registryCredential": {
+            "credential": "",
+            "credentialProvider": "SECRETS_MANAGER"
+        },
+        "imagePullCredentialsType": "SERVICE_ROLE"
+    },
+    "serviceRole": "",
+    "timeoutInMinutes": 0,
+    "queuedTimeoutInMinutes": 0,
+    "encryptionKey": "",
+    "tags": [
+        {
+            "key": "",
+            "value": ""
+        }
+    ],
+    "vpcConfig": {
+        "vpcId": "",
+        "subnets": [
+            ""
+        ],
+        "securityGroupIds": [
+            ""
+        ]
+    },
+    "badgeEnabled": true,
+    "logsConfig": {
+        "cloudWatchLogs": {
+            "status": "DISABLED",
+            "groupName": "",
+            "streamName": ""
+        },
+        "s3Logs": {
+            "status": "ENABLED",
+            "location": "",
+            "encryptionDisabled": true
+        }
+    },
+    "fileSystemLocations": [
+        {
+            "type": "EFS",
+            "location": "",
+            "mountPoint": "",
+            "identifier": "",
+            "mountOptions": ""
+        }
+    ],
+    "buildBatchConfig": {
+        "serviceRole": "",
+        "combineArtifacts": true,
+        "restrictions": {
+            "maximumBuildsAllowed": 0,
+            "computeTypesAllowed": [
+                ""
+            ]
+        },
+        "timeoutInMins": 0
+    }
+}
