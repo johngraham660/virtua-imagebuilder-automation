@@ -118,7 +118,7 @@ Resources:
     Type: AWS::ImageBuilder::ImagePipeline
     Properties:
       Name: VIRTUA-RHEL7-BUILD-IMAGE-PIPELINE
-      Description: A RHEL7 test pipeline
+      Description: A Redhat 8 test pipeline
       ImageRecipeArn: RHELServer8ImageRecipe
       InfrastructureConfigurationArn: RHELServer8ImageInfrastructureConfiguration
       DistributionConfigurationArn: DistributionConfigurationAllParameters
