@@ -29,7 +29,7 @@ Resources:
     UpdateReplacePolicy: Retain
 
   # By default, AWS Services do not have permission to perform actions on your instances. This grants
-# AWS Systems Manager (SSM) and EC2 Image Builder the necessary permissions to build an image.
+  # AWS Systems Manager (SSM) and EC2 Image Builder the necessary permissions to build an image.
   # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-iam-role.html
   # https://docs.aws.amazon.com/imagebuilder/latest/userguide/image-builder-setting-up.html
   InstanceRole:

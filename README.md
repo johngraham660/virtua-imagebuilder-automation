@@ -1,6 +1,7 @@
-### Description
+### Introduction
+<I> Insert blurb here </I>
 
-#### Folder layout
+#### What's contained in the repo
 * ```awscli_scripts``` script to manage the creation and deletion of Cloudformation Stacks
 * ```buildcomponents``` Standalone build components for EC2ImageBuilder
 * ```testcomponents``` Standalone test componments for EC2ImageBuilder
@@ -9,11 +10,9 @@
 * ```codebuild``` Contains the json object that describes the CodeBuild configuration and a build.sh script to deploy it via the awscli
 * ```codepipeline``` Contains the json object that describes the CodePipeline configuration and a build.sh script to deploy it via the awscli
 
-
-
-### Introduction
-
 ### Architecture
+
+<I> Insert blurb here </I>   
 
 ### AWS CodeCommit
 Our CodeCommit repository contains all of the Cloudformation templates required to deploy all of the EC2ImageBuilder resources which include :-
