@@ -13,8 +13,8 @@ Resources:
       Platform: Linux
       SupportedOsVersions:
         - CentOS Linux 7
-      Version: 0.0.1
-      ChangeDescription: Initial Release
+      Version: 0.0.2
+      ChangeDescription: Fixes multiple agent install options
       Data: |
         name: InstallCloudWatchAgent
         description: Downloads and Installs latest AWS CloudWatch Agent
@@ -28,9 +28,7 @@ Resources:
                 inputs:
                   commands:
                     - |
-                      cd /tmp
                       sudo yum install -y https://s3.eu-west-1.amazonaws.com/amazoncloudwatch-agent-eu-west-1/centos/amd64/latest/amazon-cloudwatch-agent.rpm
-                      sudo rpm -U /var/tmp/amazon-cloudwatch-agent.rpm
                       sudo systemctl enable amazon-cloudwatch-agent
                       sudo systemctl start amazon-cloudwatch-agent
 
