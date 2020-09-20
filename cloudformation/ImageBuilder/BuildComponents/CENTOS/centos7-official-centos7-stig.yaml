@@ -1,0 +1,103 @@
+---
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
+AWSTemplateFormatVersion: 2010-09-09
+
+Resources:
+  # Create the EC2ImageBuilder build component for cloudwatch
+  AWSCloudWatchAgentComponent:
+    Type: AWS::ImageBuilder::Component
+    Properties:
+      Name: CentOS7-STIG-Component
+      Description: This will apply the official CentOS7 STIG (Security Technical Implemetation Guides) using the official Ansible Role
+      Platform: Linux
+      SupportedOsVersions:
+        - CentOS Linux 7
+      Version: 0.0.1
+      ChangeDescription: Initial Release
+      Data: |
+        name: CentOS7STIG
+        description: Downloads and Installs latest AWS CloudWatch Agent
+        schemaVersion: 1.0
+
+        phases:
+          - name: build
+            steps:
+              - name: CentOS7-STIG-Install
+                action: ExecuteBash
+                inputs:
+                  commands:
+                    - |
+                      yum install -y epel-release ansible git
+                      ansible-galaxy install RedHatOfficial.rhel7_stig
+                      mkdir -p /var/tmp/ansible/pb_ansible_rhel7_STIG
+                      cd /var/tmp/ansible/pb_ansible_rhel7_STIG
+                      cat << EOF > /var/tmp/ansible/pb_ansible_rhel7_STIG/playbook.yml
+                      - hosts: all
+                        roles:
+                        - { role: RedHatOfficial.rhel7_stig }
+                      EOF
+                      ansible-playbook -i "localhost," -c local playbook.yml \ 
+                        --extra-vars "configure_firewalld_rate_limiting=false" \
+                        --extra-vars "service_firewalld_enabled=false" | tee > /var/log/ansible_STIG.log
+
+          - name: validate
+            steps:
+              - name: CentOS7-STIG-Validate
+                action: ExecuteBash
+                inputs:
+                  commands:
+                    - |
+                      function fail_with_message() {
+                        1>&2 echo $1
+                        exit 1
+                      }
+
+                      # ====================================================
+                      # Check our ansible & git packages have been installed
+                      # ====================================================
+                      for package in ansible git
+                      do
+                      if [ -z $(rpm -q ${package}) ]; then
+                        fail_with_message "FATAL: Required package ${package} was not found"
+                      fi
+
+                      # ========================================================
+                      # Check the ansible role was installed from ansible-galaxy
+                      # ========================================================
+                      if [ ! -d /root/.ansible/Roles/RedHatOfficial.rhel7_stig ]; then
+                        fail_with_message "FATAL: Could not find ansible role RedHatOfficial.rhel7_stig"
+                      fi
+
+          - name: test
+            steps:
+              - name: CentOS7-STIG-Test
+                action: ExecuteBash
+                inputs:
+                  commands:
+                    - |
+                      function fail_with_message() {
+                        1>&2 echo $1
+                        exit 1
+                      }
+
+                      # ==================================
+                      # Check the ansible log for failures
+                      # ==================================
+                      if [ -e /var/tmp/ansible_STIG.log ]; then
+                        NUM_FAILURES=$(grep -A1 "PLAY RECAP" /var/log/ansible_STIG.log | grep localhost | awk '{print $6}' | awk -F= '{print $1}')
+
+                        if [ ${NUM_FAILURES} -gt 0 ]; then
+                          fail_with_message "FATAL: The ansible run produced errors"
+                        fi
+
+                      else
+                        fail_with_message "FATAL: Cannot find ansible_STIG.log, the STIG may not have been applied"
+                      fi
+                
+Outputs:
+  ComponentARN:
+    Description: The ARN of the build component
+    Value: !Ref CentOS7-STIG-Component
+    Export:
+      Name: !Sub "${AWS::StackName}-ARN"
