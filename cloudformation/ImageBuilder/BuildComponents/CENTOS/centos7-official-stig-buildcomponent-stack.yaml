@@ -85,7 +85,7 @@ Resources:
                       # Check the ansible log for failures
                       # ==================================
                       if [ -e /var/tmp/ansible_STIG.log ]; then
-                        NUM_FAILURES=$(grep -A1 "PLAY RECAP" /var/log/ansible_STIG.log | grep localhost | awk '{print $6}' | awk -F= '{print $1}')
+                        NUM_FAILURES=$(grep -A1 "PLAY RECAP" /var/log/ansible_STIG.log | grep localhost | awk '{print $6}' | awk -F= '{print $2}')
 
                         if [ $NUM_FAILURES -gt 0 ]; then
                           fail_with_message "FATAL: The ansible run produced errors"
