@@ -39,9 +39,7 @@ Resources:
                         roles:
                         - { role: RedHatOfficial.rhel7_stig }
                       EOF
-                      ansible-playbook -i "localhost," -c local playbook.yml \ 
-                        --extra-vars "configure_firewalld_rate_limiting=false" \
-                        --extra-vars "service_firewalld_enabled=false" | tee > /var/log/ansible_STIG.log
+                      ansible-playbook -i "localhost," -c local /var/tmp/ansible/pb_ansible_rhel7_STIG/playbook.yml -e "configure_firewalld_rate_limiting=false" -e "service_firewalld_enabled=false" | tee > /var/log/ansible_STIG.log
 
           - name: validate
             steps:
