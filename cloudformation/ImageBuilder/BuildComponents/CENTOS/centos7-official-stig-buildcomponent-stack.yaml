@@ -28,7 +28,9 @@ Resources:
                 inputs:
                   commands:
                     - |
-                      yum install -y epel-release ansible git
+                      yum install -y epel-release
+                      yum install -y git
+                      yum install -y ansible
                       ansible-galaxy install RedHatOfficial.rhel7_stig
                       mkdir -p /var/tmp/ansible/pb_ansible_rhel7_STIG
                       cd /var/tmp/ansible/pb_ansible_rhel7_STIG
@@ -65,7 +67,7 @@ Resources:
                       # ========================================================
                       # Check the ansible role was installed from ansible-galaxy
                       # ========================================================
-                      if [ ! -d /root/.ansible/Roles/RedHatOfficial.rhel7_stig ]; then
+                      if [ ! -d /root/.ansible/roles/RedHatOfficial.rhel7_stig ]; then
                         fail_with_message "FATAL: Could not find ansible role RedHatOfficial.rhel7_stig"
                       fi
 
