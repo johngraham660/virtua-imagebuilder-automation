@@ -5,7 +5,7 @@ AWSTemplateFormatVersion: 2010-09-09
 
 Resources:
   # Create the EC2ImageBuilder build component for cloudwatch
-  AWSCloudWatchAgentComponent:
+  CentOS7OfficialSTIGComponent:
     Type: AWS::ImageBuilder::Component
     Properties:
       Name: CentOS7-STIG-Component
@@ -58,8 +58,8 @@ Resources:
                       # ====================================================
                       for package in ansible git
                       do
-                      if [ -z $(rpm -q ${package}) ]; then
-                        fail_with_message "FATAL: Required package ${package} was not found"
+                      if [ -z $(rpm -q $package) ]; then
+                        fail_with_message "FATAL: Required package $package was not found"
                       fi
 
                       # ========================================================
@@ -87,7 +87,7 @@ Resources:
                       if [ -e /var/tmp/ansible_STIG.log ]; then
                         NUM_FAILURES=$(grep -A1 "PLAY RECAP" /var/log/ansible_STIG.log | grep localhost | awk '{print $6}' | awk -F= '{print $1}')
 
-                        if [ ${NUM_FAILURES} -gt 0 ]; then
+                        if [ $NUM_FAILURES -gt 0 ]; then
                           fail_with_message "FATAL: The ansible run produced errors"
                         fi
 
@@ -98,6 +98,6 @@ Resources:
 Outputs:
   ComponentARN:
     Description: The ARN of the build component
-    Value: !Ref CentOS7-STIG-Component
+    Value: !Ref CentOS7OfficialSTIGComponent
     Export:
       Name: !Sub "${AWS::StackName}-ARN"
